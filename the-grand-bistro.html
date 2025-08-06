@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Grand Bistro</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for social media icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-100 text-gray-800 flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-orange-500 to-red-500 text-white p-4 shadow-lg">
+        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center">
+            <h1 class="text-3xl font-bold mb-2 md:mb-0">The Grand Bistro</h1>
+            <nav class="flex flex-wrap justify-center gap-2 md:gap-4">
+                <button id="nav-home" class="px-4 py-2 rounded-lg transition-colors duration-200 bg-orange-600 text-white">Home</button>
+                <button id="nav-menu" class="px-4 py-2 rounded-lg transition-colors duration-200 bg-orange-500 text-white hover:bg-orange-600">Menu & Order</button>
+                <button id="nav-reservations" class="px-4 py-2 rounded-lg transition-colors duration-200 bg-orange-500 text-white hover:bg-orange-600">Reservations</button>
+                <button id="nav-contact" class="px-4 py-2 rounded-lg transition-colors duration-200 bg-orange-500 text-white hover:bg-orange-600">Contact</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto p-4 md:p-8">
+        <div id="user-id-display" class="text-sm text-gray-600 mb-4 text-center hidden">
+            Your User ID: <span id="user-id-value" class="font-mono bg-gray-200 px-2 py-1 rounded-md"></span>
+        </div>
+
+        <!-- Home Section -->
+        <section id="home-section" class="bg-white p-6 rounded-xl shadow-lg text-center">
+            <h2 class="text-4xl font-extrabold text-orange-700 mb-4">Welcome to The Grand Bistro!</h2>
+            <p class="text-lg mb-6">
+                Experience culinary excellence and a vibrant atmosphere. From exquisite dishes to handcrafted cocktails, we promise an unforgettable dining experience.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="relative rounded-lg overflow-hidden shadow-md">
+                    <img
+                        src="https://placehold.co/600x400/FFD700/000000?text=Delicious+Food"
+                        alt="Delicious Food"
+                        class="w-full h-64 object-cover transition-transform duration-300 hover:scale-105"
+                        onerror="this.onerror=null;this.src='https://placehold.co/600x400/FFD700/000000?text=Delicious+Food';"
+                    />
+                    <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+                        <span class="text-white text-2xl font-bold">Our Cuisine</span>
+                    </div>
+                </div>
+                <div class="relative rounded-lg overflow-hidden shadow-md">
+                    <img
+                        src="https://placehold.co/600x400/A52A2A/FFFFFF?text=Cozy+Bar"
+                        alt="Cozy Bar"
+                        class="w-full h-64 object-cover transition-transform duration-300 hover:scale-105"
+                        onerror="this.onerror=null;this.src='https://placehold.co/600x400/A52A2A/FFFFFF?text=Cozy+Bar';"
+                    />
+                    <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+                        <span class="text-white text-2xl font-bold">Our Bar</span>
+                    </div>
+                </div>
+            </div>
+            <button id="home-reserve-btn" class="mt-8 bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition-transform duration-300 hover:scale-105">
+                Make a Reservation
+            </button>
+        </section>
+
+        <!-- Menu & Order Section -->
+        <section id="menu-section" class="bg-white p-6 rounded-xl shadow-lg hidden">
+            <h2 class="text-3xl font-bold text-orange-700 mb-6 text-center">Our Menu</h2>
+
+            <!-- Category Filter -->
+            <div id="category-filter" class="flex flex-wrap justify-center gap-2 mb-6">
+                <!-- Category buttons will be rendered here by JS -->
+            </div>
+
+            <!-- Menu Items Grid -->
+            <div id="menu-items-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Menu items will be rendered here by JS -->
+            </div>
+
+            <!-- View Cart Button -->
+            <div id="view-cart-container" class="mt-8 text-center hidden">
+                <button id="view-cart-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-transform duration-300 hover:scale-105">
+                    View Cart (<span id="cart-item-count">0</span>) - Total: $<span id="cart-total-price">0.00</span>
+                </button>
+            </div>
+
+            <!-- Cart Modal -->
+            <div id="cart-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
+                <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto relative">
+                    <button id="close-cart-modal" class="absolute top-3 right-3 text-gray-500 hover:text-gray-800 text-2xl font-bold">
+                        &times;
+                    </button>
+                    <h3 class="text-2xl font-bold text-orange-700 mb-4 text-center">Your Order</h3>
+                    <p id="empty-cart-message" class="text-center text-gray-600 hidden">Your cart is empty.</p>
+                    <ul id="cart-items-list" class="space-y-3 mb-6">
+                        <!-- Cart items will be rendered here by JS -->
+                    </ul>
+                    <div id="cart-summary" class="border-t pt-4 flex justify-between items-center font-bold text-xl text-gray-900 hidden">
+                        <span>Total:</span>
+                        <span>$<span id="modal-cart-total-price">0.00</span></span>
+                    </div>
+                    <p id="order-confirmation-message" class="mt-4 text-center text-green-600 font-semibold hidden"></p>
+                    <button id="place-order-btn" class="mt-6 w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 rounded-md shadow-lg transition-transform duration-200 transform hover:scale-105 flex items-center justify-center">
+                        <svg id="order-loading-spinner" class="animate-spin h-5 w-5 text-white mr-3 hidden" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Place Order
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Reservations Section -->
+        <section id="reservations-section" class="bg-white p-6 rounded-xl shadow-lg hidden">
+            <h2 class="text-3xl font-bold text-orange-700 mb-6 text-center">Make a Reservation</h2>
+            <form id="reservation-form" class="space-y-4 max-w-lg mx-auto">
+                <div>
+                    <label for="reservation-date" class="block text-gray-700 text-sm font-bold mb-2">Date:</label>
+                    <input
+                        type="date"
+                        id="reservation-date"
+                        name="date"
+                        class="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        required
+                    />
+                </div>
+                <div>
+                    <label for="reservation-time" class="block text-gray-700 text-sm font-bold mb-2">Time:</label>
+                    <input
+                        type="time"
+                        id="reservation-time"
+                        name="time"
+                        class="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        required
+                    />
+                </div>
+                <div>
+                    <label for="reservation-guests" class="block text-gray-700 text-sm font-bold mb-2">Number of Guests:</label>
+                    <input
+                        type="number"
+                        id="reservation-guests"
+                        name="guests"
+                        min="1"
+                        value="1"
+                        class="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        required
+                    />
+                </div>
+                <div>
+                    <label for="reservation-name" class="block text-gray-700 text-sm font-bold mb-2">Your Name:</label>
+                    <input
+                        type="text"
+                        id="reservation-name"
+                        name="name"
+                        class="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        placeholder="John Doe"
+                        required
+                    />
+                </div>
+                <div>
+                    <label for="reservation-phone" class="block text-gray-700 text-sm font-bold mb-2">Phone Number:</label>
+                    <input
+                        type="tel"
+                        id="reservation-phone"
+                        name="phone"
+                        class="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        placeholder="123-456-7890"
+                        required
+                    />
+                </div>
+                <div>
+                    <label for="reservation-email" class="block text-gray-700 text-sm font-bold mb-2">Email (Optional):</label>
+                    <input
+                        type="email"
+                        id="reservation-email"
+                        name="email"
+                        class="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        placeholder="john.doe@example.com"
+                    />
+                </div>
+                <p id="reservation-confirmation-message" class="text-center text-green-600 font-semibold hidden"></p>
+                <button type="submit" id="confirm-reservation-btn" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-4 rounded-md shadow-lg transition-transform duration-200 transform hover:scale-105 flex items-center justify-center">
+                    <svg id="reservation-loading-spinner" class="animate-spin h-5 w-5 text-white mr-3 hidden" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Confirm Reservation
+                </button>
+            </form>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact-section" class="bg-white p-6 rounded-xl shadow-lg hidden">
+            <h2 class="text-3xl font-bold text-orange-700 mb-6 text-center">Contact Us</h2>
+            <div class="space-y-4 text-lg text-gray-700">
+                <p><strong>Address:</strong> 123 Main Street</p>
+                <p><strong>Phone:</strong> (555) 123-4567</p>
+                <p><strong>Email:</strong> info@grandbistro.com</p>
+                <div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Opening Hours:</h3>
+                    <ul class="list-disc list-inside mx-auto w-fit">
+                        <li>Monday - Friday: 11:00 AM - 10:00 PM</li>
+                        <li>Saturday: 12:00 PM - 11:00 PM</li>
+                        <li>Sunday: 12:00 PM - 9:00 PM</li>
+                    </ul>
+                </div>
+                <div class="mt-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Follow Us:</h3>
+                    <div class="flex justify-center space-x-4 text-3xl">
+                        <a href="#" class="text-blue-600 hover:text-blue-800 transition-colors duration-200">
+                            <i class="fab fa-facebook-square"></i>
+                        </a>
+                        <a href="#" class="text-pink-600 hover:text-pink-800 transition-colors duration-200">
+                            <i class="fab fa-instagram-square"></i>
+                        </a>
+                        <a href="#" class="text-blue-400 hover:text-blue-600 transition-colors duration-200">
+                            <i class="fab fa-twitter-square"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white p-4 text-center mt-8 rounded-t-xl">
+        <p>&copy; <span id="current-year"></span> The Grand Bistro. All rights reserved.</p>
+    </footer>
+
+    <script type="module">
+        // Firebase imports
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global variables for Firebase
+        let app;
+        let db;
+        let auth;
+        let userId = null;
+        let isLoading = false; // Global loading state
+
+        // Helper function to convert base64 to ArrayBuffer for audio playback
+        function base64ToArrayBuffer(base64) {
+            const binaryString = window.atob(base64);
+            const len = binaryString.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+        // Helper function to convert PCM audio data to WAV format
+        function pcmToWav(pcm16, sampleRate) {
+            const dataLength = pcm16.length * 2; // 2 bytes per sample for PCM16
+            const buffer = new ArrayBuffer(44 + dataLength);
+            const view = new DataView(buffer);
+
+            // RIFF header
+            writeString(view, 0, 'RIFF');
+            view.setUint32(4, 36 + dataLength, true);
+            writeString(view, 8, 'WAVE');
+
+            // FMT sub-chunk
+            writeString(view, 12, 'fmt ');
+            view.setUint32(16, 16, true); // Subchunk1Size (16 for PCM)
+            view.setUint16(20, 1, true);  // AudioFormat (1 for PCM)
+            view.setUint16(22, 1, true);  // NumChannels (1 for mono)
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, sampleRate * 2, true); // ByteRate (SampleRate * NumChannels * BitsPerSample/8)
+            view.setUint16(32, 2, true);  // BlockAlign (NumChannels * BitsPerSample/8)
+            view.setUint16(34, 16, true); // BitsPerSample
+
+            // DATA sub-chunk
+            writeString(view, 36, 'data');
+            view.setUint32(40, dataLength, true);
+
+            // Write PCM data
+            let offset = 44;
+            for (let i = 0; i < pcm16.length; i++) {
+                view.setInt16(offset, pcm16[i], true);
+                offset += 2;
+            }
+
+            return new Blob([view], { type: 'audio/wav' });
+        }
+
+        function writeString(view, offset, string) {
+            for (let i = 0; i < string.length; i++) {
+                view.setUint8(offset + i, string.charCodeAt(i));
+            }
+        }
+
+        const menuItems = [
+            { id: 1, name: 'Classic Burger', price: 12.99, category: 'Main Courses', description: 'Juicy beef patty, lettuce, tomato, onion, pickles, special sauce.' },
+            { id: 2, name: 'Margherita Pizza', price: 15.50, category: 'Main Courses', description: 'Fresh mozzarella, basil, tomato sauce on a thin crust.' },
+            { id: 3, name: 'Caesar Salad', price: 9.75, category: 'Appetizers', description: 'Crisp romaine, croutons, parmesan, classic Caesar dressing.' },
+            { id: 4, name: 'French Fries', price: 4.50, category: 'Sides', description: 'Golden crispy fries, perfectly salted.' },
+            { id: 5, name: 'Craft Beer (IPA)', price: 7.00, category: 'Drinks', description: 'Hoppy and refreshing India Pale Ale.' },
+            { id: 6, name: 'Mojito', price: 11.00, category: 'Drinks', description: 'Classic cocktail with fresh mint, lime, rum, and soda.' },
+            { id: 7, name: 'Chocolate Lava Cake', price: 8.00, category: 'Desserts', description: 'Warm chocolate cake with a molten center, served with vanilla ice cream.' },
+            { id: 8, name: 'Grilled Salmon', price: 19.99, category: 'Main Courses', description: 'Pan-seared salmon fillet with seasonal vegetables.' },
+            { id: 9, name: 'Onion Rings', price: 5.00, category: 'Sides', description: 'Crispy, golden-brown onion rings with a tangy dipping sauce.' },
+            { id: 10, name: 'Espresso Martini', price: 12.50, category: 'Drinks', description: 'Vodka, coffee liqueur, and fresh espresso.' },
+        ];
+
+        const categories = ['All', 'Appetizers', 'Main Courses', 'Sides', 'Desserts', 'Drinks'];
+        let cart = [];
+        let activeSection = 'home';
+
+        // DOM Elements
+        const navButtons = {
+            home: document.getElementById('nav-home'),
+            menu: document.getElementById('nav-menu'),
+            reservations: document.getElementById('nav-reservations'),
+            contact: document.getElementById('nav-contact')
+        };
+        const sections = {
+            home: document.getElementById('home-section'),
+            menu: document.getElementById('menu-section'),
+            reservations: document.getElementById('reservations-section'),
+            contact: document.getElementById('contact-section')
+        };
+        const userIdDisplay = document.getElementById('user-id-display');
+        const userIdValue = document.getElementById('user-id-value');
+        const homeReserveBtn = document.getElementById('home-reserve-btn');
+
+        // Menu & Order elements
+        const categoryFilterContainer = document.getElementById('category-filter');
+        const menuItemsGrid = document.getElementById('menu-items-grid');
+        const viewCartContainer = document.getElementById('view-cart-container');
+        const viewCartBtn = document.getElementById('view-cart-btn');
+        const cartItemCount = document.getElementById('cart-item-count');
+        const cartTotalPrice = document.getElementById('cart-total-price');
+        const cartModal = document.getElementById('cart-modal');
+        const closeCartModalBtn = document.getElementById('close-cart-modal');
+        const emptyCartMessage = document.getElementById('empty-cart-message');
+        const cartItemsList = document.getElementById('cart-items-list');
+        const cartSummary = document.getElementById('cart-summary');
+        const modalCartTotalPrice = document.getElementById('modal-cart-total-price');
+        const orderConfirmationMessage = document.getElementById('order-confirmation-message');
+        const placeOrderBtn = document.getElementById('place-order-btn');
+        const orderLoadingSpinner = document.getElementById('order-loading-spinner');
+
+        // Reservations elements
+        const reservationForm = document.getElementById('reservation-form');
+        const reservationDateInput = document.getElementById('reservation-date');
+        const reservationTimeInput = document.getElementById('reservation-time');
+        const reservationGuestsInput = document.getElementById('reservation-guests');
+        const reservationNameInput = document.getElementById('reservation-name');
+        const reservationPhoneInput = document.getElementById('reservation-phone');
+        const reservationEmailInput = document.getElementById('reservation-email');
+        const reservationConfirmationMessage = document.getElementById('reservation-confirmation-message');
+        const confirmReservationBtn = document.getElementById('confirm-reservation-btn');
+        const reservationLoadingSpinner = document.getElementById('reservation-loading-spinner');
+
+        // Footer year
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+
+        // --- Firebase Initialization ---
+        async function initializeFirebase() {
+            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+            const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+
+            try {
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                // Sign in anonymously or with custom token
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                // Listen for auth state changes
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        userIdValue.textContent = userId;
+                        userIdDisplay.classList.remove('hidden');
+                    } else {
+                        // User is signed out or not yet signed in, generate a random ID for unauthenticated users
+                        userId = crypto.randomUUID();
+                        userIdValue.textContent = userId;
+                        userIdDisplay.classList.remove('hidden');
+                    }
+                });
+            } catch (error) {
+                console.error("Failed to initialize Firebase:", error);
+            }
+        }
+
+        // --- Navigation Logic ---
+        function setActiveSection(sectionName) {
+            // Hide all sections
+            Object.values(sections).forEach(section => section.classList.add('hidden'));
+            // Show the active section
+            sections[sectionName].classList.remove('hidden');
+
+            // Update active navigation button styling
+            Object.keys(navButtons).forEach(btnName => {
+                if (btnName === sectionName) {
+                    navButtons[btnName].classList.remove('bg-orange-500', 'hover:bg-orange-600');
+                    navButtons[btnName].classList.add('bg-orange-600');
+                } else {
+                    navButtons[btnName].classList.remove('bg-orange-600');
+                    navButtons[btnName].classList.add('bg-orange-500', 'hover:bg-orange-600');
+                }
+            });
+            activeSection = sectionName;
+        }
+
+        // Add event listeners for navigation buttons
+        navButtons.home.addEventListener('click', () => setActiveSection('home'));
+        navButtons.menu.addEventListener('click', () => setActiveSection('menu'));
+        navButtons.reservations.addEventListener('click', () => setActiveSection('reservations'));
+        navButtons.contact.addEventListener('click', () => setActiveSection('contact'));
+        homeReserveBtn.addEventListener('click', () => setActiveSection('reservations'));
+
+        // --- Menu & Order Logic ---
+        function renderCategories() {
+            categoryFilterContainer.innerHTML = ''; // Clear existing categories
+            categories.forEach(category => {
+                const button = document.createElement('button');
+                button.textContent = category;
+                button.classList.add('px-4', 'py-2', 'rounded-full', 'text-sm', 'font-medium', 'transition-colors', 'duration-200');
+                if (category === 'All') { // Initial active category
+                    button.classList.add('bg-orange-600', 'text-white', 'shadow-md');
+                } else {
+                    button.classList.add('bg-gray-200', 'text-gray-700', 'hover:bg-gray-300');
+                }
+                button.addEventListener('click', () => {
+                    // Update active category styling
+                    document.querySelectorAll('#category-filter button').forEach(btn => {
+                        btn.classList.remove('bg-orange-600', 'text-white', 'shadow-md');
+                        btn.classList.add('bg-gray-200', 'text-gray-700', 'hover:bg-gray-300');
+                    });
+                    button.classList.remove('bg-gray-200', 'text-gray-700', 'hover:bg-gray-300');
+                    button.classList.add('bg-orange-600', 'text-white', 'shadow-md');
+                    renderMenuItems(category);
+                });
+                categoryFilterContainer.appendChild(button);
+            });
+        }
+
+        function renderMenuItems(selectedCategory = 'All') {
+            menuItemsGrid.innerHTML = ''; // Clear existing items
+            const filteredItems = selectedCategory === 'All'
+                ? menuItems
+                : menuItems.filter(item => item.category === selectedCategory);
+
+            filteredItems.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.classList.add('bg-gray-50', 'p-4', 'rounded-lg', 'shadow-md', 'flex', 'flex-col', 'justify-between');
+                itemDiv.innerHTML = `
+                    <div>
+                        <h3 class="text-xl font-semibold text-gray-900">${item.name}</h3>
+                        <p class="text-gray-600 text-sm mb-2">${item.description}</p>
+                        <p class="text-lg font-bold text-orange-700 mb-4">$${item.price.toFixed(2)}</p>
+                    </div>
+                    <button data-item-id="${item.id}" class="add-to-cart-btn w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-md transition-transform duration-200 transform hover:scale-105">
+                        Add to Cart
+                    </button>
+                `;
+                menuItemsGrid.appendChild(itemDiv);
+            });
+
+            // Add event listeners for "Add to Cart" buttons
+            document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+                button.addEventListener('click', (event) => {
+                    const itemId = parseInt(event.target.dataset.itemId);
+                    const itemToAdd = menuItems.find(item => item.id === itemId);
+                    addToCart(itemToAdd);
+                });
+            });
+        }
+
+        function addToCart(item) {
+            const existingItem = cart.find(cartItem => cartItem.id === item.id);
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cart.push({ ...item, quantity: 1 });
+            }
+            updateCartDisplay();
+        }
+
+        function removeFromCart(itemId) {
+            const existingItemIndex = cart.findIndex(cartItem => cartItem.id === itemId);
+            if (existingItemIndex > -1) {
+                if (cart[existingItemIndex].quantity === 1) {
+                    cart.splice(existingItemIndex, 1);
+                } else {
+                    cart[existingItemIndex].quantity--;
+                }
+            }
+            updateCartDisplay();
+            renderCartItemsInModal(); // Re-render modal content after removal
+        }
+
+        function getTotalPrice() {
+            return cart.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
+        }
+
+        function updateCartDisplay() {
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartItemCount.textContent = totalItems;
+            cartTotalPrice.textContent = getTotalPrice();
+
+            if (totalItems > 0) {
+                viewCartContainer.classList.remove('hidden');
+            } else {
+                viewCartContainer.classList.add('hidden');
+            }
+        }
+
+        function renderCartItemsInModal() {
+            cartItemsList.innerHTML = ''; // Clear existing items
+            if (cart.length === 0) {
+                emptyCartMessage.classList.remove('hidden');
+                cartSummary.classList.add('hidden');
+                placeOrderBtn.disabled = true;
+            } else {
+                emptyCartMessage.classList.add('hidden');
+                cartSummary.classList.remove('hidden');
+                placeOrderBtn.disabled = false;
+
+                cart.forEach(item => {
+                    const listItem = document.createElement('li');
+                    listItem.classList.add('flex', 'justify-between', 'items-center', 'bg-gray-100', 'p-3', 'rounded-md', 'shadow-sm');
+                    listItem.innerHTML = `
+                        <div>
+                            <p class="font-semibold text-gray-900">${item.name}</p>
+                            <p class="text-sm text-gray-600">$${item.price.toFixed(2)} x ${item.quantity}</p>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button data-item-id="${item.id}" class="remove-from-cart-btn bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-md text-sm">
+                                -
+                            </button>
+                            <span class="font-bold">${item.quantity}</span>
+                            <button data-item-id="${item.id}" class="add-to-cart-modal-btn bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded-md text-sm">
+                                +
+                            </button>
+                        </div>
+                    `;
+                    cartItemsList.appendChild(listItem);
+                });
+                modalCartTotalPrice.textContent = getTotalPrice();
+
+                // Add event listeners for buttons inside the modal
+                document.querySelectorAll('.remove-from-cart-btn').forEach(button => {
+                    button.addEventListener('click', (event) => {
+                        const itemId = parseInt(event.target.dataset.itemId);
+                        removeFromCart(itemId);
+                    });
+                });
+                document.querySelectorAll('.add-to-cart-modal-btn').forEach(button => {
+                    button.addEventListener('click', (event) => {
+                        const itemId = parseInt(event.target.dataset.itemId);
+                        const itemToAdd = menuItems.find(item => item.id === itemId);
+                        addToCart(itemToAdd); // This will update cart and call updateCartDisplay, which then calls renderCartItemsInModal
+                    });
+                });
+            }
+        }
+
+        viewCartBtn.addEventListener('click', () => {
+            cartModal.classList.remove('hidden');
+            renderCartItemsInModal();
+            orderConfirmationMessage.classList.add('hidden'); // Hide previous confirmation
+        });
+
+        closeCartModalBtn.addEventListener('click', () => {
+            cartModal.classList.add('hidden');
+        });
+
+        placeOrderBtn.addEventListener('click', async () => {
+            if (!db || !userId) {
+                console.error("Firestore not initialized or user ID not available.");
+                orderConfirmationMessage.textContent = "Failed to place order. Please try again later.";
+                orderConfirmationMessage.classList.remove('hidden', 'text-green-600');
+                orderConfirmationMessage.classList.add('text-red-600');
+                return;
+            }
+
+            if (cart.length === 0) {
+                orderConfirmationMessage.textContent = "Your cart is empty. Please add items before ordering.";
+                orderConfirmationMessage.classList.remove('hidden', 'text-green-600');
+                orderConfirmationMessage.classList.add('text-red-600');
+                return;
+            }
+
+            isLoading = true;
+            placeOrderBtn.disabled = true;
+            orderLoadingSpinner.classList.remove('hidden');
+
+            try {
+                const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                const ordersCollectionRef = collection(db, `artifacts/${appId}/users/${userId}/orders`);
+                await addDoc(ordersCollectionRef, {
+                    items: cart,
+                    totalPrice: getTotalPrice(),
+                    createdAt: serverTimestamp(),
+                    userId: userId,
+                });
+                orderConfirmationMessage.textContent = 'Order placed successfully! Your food will be ready soon.';
+                orderConfirmationMessage.classList.remove('hidden', 'text-red-600');
+                orderConfirmationMessage.classList.add('text-green-600');
+                cart = []; // Clear cart
+                updateCartDisplay();
+                renderCartItemsInModal(); // Update modal to show empty cart
+                speakText('Order placed successfully! Your food will be ready soon.');
+            } catch (error) {
+                console.error("Error adding order to Firestore:", error);
+                orderConfirmationMessage.textContent = 'Failed to place order. Please try again.';
+                orderConfirmationMessage.classList.remove('hidden', 'text-green-600');
+                orderConfirmationMessage.classList.add('text-red-600');
+            } finally {
+                isLoading = false;
+                orderLoadingSpinner.classList.add('hidden');
+                // Keep button disabled if cart is empty, otherwise enable
+                if (cart.length === 0) {
+                    placeOrderBtn.disabled = true;
+                } else {
+                    placeOrderBtn.disabled = false;
+                }
+            }
+        });
+
+        // --- Reservations Logic ---
+        reservationForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            if (!db || !userId) {
+                console.error("Firestore not initialized or user ID not available.");
+                reservationConfirmationMessage.textContent = "Failed to make reservation. Please try again later.";
+                reservationConfirmationMessage.classList.remove('hidden', 'text-green-600');
+                reservationConfirmationMessage.classList.add('text-red-600');
+                return;
+            }
+
+            const reservationDetails = {
+                date: reservationDateInput.value,
+                time: reservationTimeInput.value,
+                guests: parseInt(reservationGuestsInput.value),
+                name: reservationNameInput.value,
+                phone: reservationPhoneInput.value,
+                email: reservationEmailInput.value,
+            };
+
+            if (!reservationDetails.date || !reservationDetails.time || !reservationDetails.name || !reservationDetails.phone) {
+                reservationConfirmationMessage.textContent = "Please fill in all required reservation fields.";
+                reservationConfirmationMessage.classList.remove('hidden', 'text-green-600');
+                reservationConfirmationMessage.classList.add('text-red-600');
+                return;
+            }
+
+            isLoading = true;
+            confirmReservationBtn.disabled = true;
+            reservationLoadingSpinner.classList.remove('hidden');
+
+            try {
+                const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                const reservationsCollectionRef = collection(db, `artifacts/${appId}/users/${userId}/reservations`);
+                await addDoc(reservationsCollectionRef, {
+                    ...reservationDetails,
+                    createdAt: serverTimestamp(),
+                    userId: userId,
+                });
+                reservationConfirmationMessage.textContent = 'Reservation confirmed! We look forward to seeing you.';
+                reservationConfirmationMessage.classList.remove('hidden', 'text-red-600');
+                reservationConfirmationMessage.classList.add('text-green-600');
+                // Clear form
+                reservationForm.reset();
+                reservationGuestsInput.value = 1; // Reset guests to default
+                speakText('Reservation confirmed! We look forward to seeing you.');
+            } catch (error) {
+                console.error("Error adding reservation to Firestore:", error);
+                reservationConfirmationMessage.textContent = 'Failed to make reservation. Please try again.';
+                reservationConfirmationMessage.classList.remove('hidden', 'text-green-600');
+                reservationConfirmationMessage.classList.add('text-red-600');
+            } finally {
+                isLoading = false;
+                confirmReservationBtn.disabled = false;
+                reservationLoadingSpinner.classList.add('hidden');
+            }
+        });
+
+        // --- TTS Logic ---
+        async function speakText(text) {
+            isLoading = true;
+            // Disable buttons while speaking if needed, or manage a separate TTS loading state
+            // For this example, we'll use the main isLoading state.
+
+            try {
+                const payload = {
+                    contents: [{
+                        parts: [{ text: text }]
+                    }],
+                    generationConfig: {
+                        responseModalities: ["AUDIO"],
+                        speechConfig: {
+                            voiceConfig: {
+                                prebuiltVoiceConfig: { voiceName: "Kore" }
+                            }
+                        }
+                    },
+                    model: "gemini-2.5-flash-preview-tts"
+                };
+                const apiKey = ""; // Leave as-is
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`TTS API error: ${response.status} ${response.statusText} - ${JSON.stringify(errorData)}`);
+                }
+
+                const result = await response.json();
+                const part = result?.candidates?.[0]?.content?.parts?.[0];
+                const audioData = part?.inlineData?.data;
+                const mimeType = part?.inlineData?.mimeType;
+
+                if (audioData && mimeType && mimeType.startsWith("audio/")) {
+                    const sampleRateMatch = mimeType.match(/rate=(\d+)/);
+                    const sampleRate = sampleRateMatch ? parseInt(sampleRateMatch[1], 10) : 16000; // Default to 16kHz if not found
+
+                    const pcmData = base64ToArrayBuffer(audioData);
+                    const pcm16 = new Int16Array(pcmData);
+                    const wavBlob = pcmToWav(pcm16, sampleRate);
+                    const url = URL.createObjectURL(wavBlob);
+
+                    const audio = new Audio(url);
+                    audio.play();
+                    audio.onended = () => {
+                        URL.revokeObjectURL(url); // Clean up the object URL after playback
+                    };
+                } else {
+                    console.error("No audio data or invalid mime type received from TTS API.");
+                }
+            } catch (error) {
+                console.error("Error generating TTS:", error);
+            } finally {
+                isLoading = false;
+            }
+        }
+
+
+        // --- Initial Load ---
+        window.onload = async () => {
+            await initializeFirebase(); // Initialize Firebase first
+            setActiveSection('home'); // Set initial active section
+            renderCategories(); // Render category filter
+            renderMenuItems(); // Render initial menu items
+            updateCartDisplay(); // Update cart display on load
+        };
+    </script>
+</body>
+</html>
